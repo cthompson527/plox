@@ -3,8 +3,11 @@ cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 # create project
 project(plox)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # add executable
 add_executable(${PROJECT_NAME} main.cpp src/lexer.cpp)
+
 
 # add dependencies
 include(cmake/CPM.cmake)

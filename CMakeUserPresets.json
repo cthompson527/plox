@@ -2,7 +2,7 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 23,
+    "minor": 28,
     "patch": 0
   },
   "configurePresets": [
@@ -13,7 +13,6 @@
       "generator": "Unix Makefiles", // use ninja pater
       "binaryDir": "${sourceDir}/build",
       "environment": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "1",
         "CPM_SOURCE_CACHE": "~/.cache/CPM"
       },
       "cacheVariables": {
