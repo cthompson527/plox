@@ -1,19 +1,26 @@
 #include <iostream>
-#include <cassert>
 #include <sysexits.h>
 #include <lexer.hpp>
+#include <fstream>
 
 void runPrompt() {
     std::string line;
-    std::cout << "> ";
     plox::Lexer lexer;
+    std::cout << "> ";
     while (std::getline(std::cin, line)) {
         lexer.processLine(line);
+        std::cout << "> ";
     }
 }
 
 void runFile(const char* filename) {
-    assert(false && "Not implemented");
+    std::string line;
+    plox::Lexer lexer;
+    std::ifstream ifs{filename};
+    while (std::getline(ifs, line)) {
+        lexer.processLine(line);
+    }
+
 }
 
 int main(int argc, const char* argv[]) {

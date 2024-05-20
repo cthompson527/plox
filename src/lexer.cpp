@@ -1,10 +1,12 @@
 #include <lexer.hpp>
-#include <cassert>
+#include <iostream>
 
 namespace plox {
 
 void Lexer::processLine(const std::string& line) {
-    assert(false && "Not implemented");
+    for (const auto ch : line) {
+        std::cout << ch << "\n";
+    }
 }
 
 }
