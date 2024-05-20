@@ -1,5 +1,6 @@
-bin := $(shell pwd)/.bin
-build := $(shell pwd)/build
+source := $(shell pwd)
+bin := ${source}/.bin
+build := ${source}/build
 tools := ${bin}/cmake ${bin}/clang++ ${bin}/clang
 
 plox: main.cpp src/lexer.cpp ${build}/Makefile
@@ -7,6 +8,7 @@ plox: main.cpp src/lexer.cpp ${build}/Makefile
 
 ${build}/Makefile: ${tools} CMakeLists.txt
 	${bin}/cmake --preset default
+	@cp ${build}/compile_commands.json ${source}/compile_commands.json
 
 ${tools}:
 	mkdir -p ${bin}
