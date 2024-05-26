@@ -19,4 +19,6 @@ target_compile_options(${PROJECT_NAME} PUBLIC
   -Wno-c++98-compat
   -Wno-missing-prototypes
   -Wno-unsafe-buffer-usage
+  -Wno-padded
+  -Wno-missing-noreturn
 )

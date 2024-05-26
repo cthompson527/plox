@@ -13,14 +13,16 @@ void runPrompt() {
     }
 }
 
-void runFile(const char* filename) {
+int runFile(const char* filename) {
     std::string line;
     plox::Lexer lexer;
     std::ifstream ifs{filename};
-    while (std::getline(ifs, line)) {
-        lexer.processLine(line);
+    std::getline(ifs, line, '\0');
+    lexer.processFile(line);
+    if (lexer.hadError()) {
+        return EX_DATAERR;
     }
-
+    return EX_OK;
 }
 
 int main(int argc, const char* argv[]) {
@@ -28,9 +30,9 @@ int main(int argc, const char* argv[]) {
         std::cerr << "Usage: " << argv[0] << " [script]\n";
         return EX_USAGE;
     } else if (argc == 2) {
-        runFile(argv[1]);
+        return runFile(argv[1]);
     } else {
         runPrompt();
     }
-    return 0;
+    return EX_OK;
 }
