@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <lexer.hpp>
+#include <token.hpp>
 
 namespace plox {
 
@@ -26,6 +27,15 @@ void Lexer::processLine(const std::string &) {
 
 void Lexer::scanToken() {
   char c = source[current++];
+  auto isNext = [&](const char ch) {
+    if (current == source.length())
+      return false;
+    if (ch != source[current]) {
+      return false;
+    }
+    current++;
+    return true;
+  };
   switch (c) {
     // clang-format off
   case '(': addToken(TokenType::LEFT_PAREN); break;
@@ -38,6 +48,21 @@ void Lexer::scanToken() {
   case '+': addToken(TokenType::PLUS); break;
   case ';': addToken(TokenType::SEMICOLON); break;
   case '*': addToken(TokenType::STAR); break;
+  case '!': addToken(isNext('=') ? TokenType::BANG_EQUAL : TokenType::BANG); break;
+  case '=': addToken(isNext('=') ? TokenType::EQUAL_EQUAL : TokenType::EQUAL); break;
+  case '<': addToken(isNext('=') ? TokenType::LESS_EQUAL : TokenType::LESS); break;
+  case '>': addToken(isNext('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER); break;
+  case '/': 
+            if (isNext('/')) {
+              while(current < source.length() and source[++current] != '\n') {}
+              line++;
+            } else {
+              addToken(TokenType::SLASH); 
+            }
+            break;
+  case ' ':
+  case '\r':
+  case '\t': break;
   case '\n': line++; break;
   default: error(line, "unexpected cahracter");
     // clang-format on
