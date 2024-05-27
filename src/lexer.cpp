@@ -85,5 +85,6 @@ void Lexer::report(const std::size_t line_no, const std::string &where,
 }
 
 bool Lexer::hadError() const { return hasError; }
+// hello!
 
 } // namespace plox
