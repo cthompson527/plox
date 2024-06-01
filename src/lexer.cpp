@@ -25,10 +25,24 @@ void Lexer::processLine(const std::string &) {
   assert(false && "not implemented");
 }
 
+bool Lexer::isAtEnd() const { return current == source.length(); }
+
+char Lexer::peek() const { return isAtEnd() ? '\0' : source[current]; }
+
+bool Lexer::isDigit(const char ch) const { return ch >= '0' and ch <= '9'; }
+
+bool Lexer::isAlpha(const char ch) const {
+  return (ch >= 'a' and ch <= 'z') or (ch >= 'A' and ch <= 'Z') or ch == '_';
+}
+
+bool Lexer::isAlphaNumeric(const char ch) const {
+  return isAlpha(ch) or isDigit(ch);
+}
+
 void Lexer::scanToken() {
   char c = source[current++];
   auto isNext = [&](const char ch) {
-    if (current == source.length())
+    if (isAtEnd())
       return false;
     if (ch != source[current]) {
       return false;
@@ -54,24 +68,78 @@ void Lexer::scanToken() {
   case '>': addToken(isNext('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER); break;
   case '/': 
             if (isNext('/')) {
-              while(current < source.length() and source[++current] != '\n') {}
-              line++;
+              while(not isAtEnd() and source[current++] != '\n') {}
             } else {
               addToken(TokenType::SLASH); 
             }
             break;
+  case '"': string(); break;
   case ' ':
   case '\r':
   case '\t': break;
   case '\n': line++; break;
-  default: error(line, "unexpected cahracter");
+  default: if (isDigit(c)) {
+             number();
+           } else if (isAlpha(c)) {
+             identifier();
+           } else {
+             error(line, "unexpected cahracter");
+           }
     // clang-format on
   }
 }
 
+void Lexer::identifier() {
+  while (isAlphaNumeric(peek())) {
+    current++;
+  }
+
+  addToken(TokenType::IDENTIFIER);
+}
+
+void Lexer::number() {
+  while (isDigit(peek())) {
+    current++;
+  }
+
+  if (peek() == '.' and isDigit(source[current + 1])) {
+    current++;
+
+    while (isDigit(peek())) {
+      current++;
+    }
+  }
+
+  const auto &value = source.substr(start, current - start);
+  addToken(TokenType::NUMBER, std::stod(value));
+}
+
+void Lexer::string() {
+  while (peek() != '"' and not isAtEnd()) {
+    if (peek() == '\n') {
+      line++;
+    }
+    current++;
+  }
+
+  if (isAtEnd()) {
+    error(line, "Unterminated string.");
+    return;
+  }
+
+  const auto &value = source.substr(start + 1, current - start - 1);
+  current++;
+  addToken(TokenType::STRING, value);
+}
+
 void Lexer::addToken(const TokenType type) {
-  std::string str = source.substr(start, current);
+  std::string str = source.substr(start, current - start);
   tokens.emplace_back(type, str, line);
+}
+
+void Lexer::addToken(const TokenType type, std::any literal) {
+  std::string str = source.substr(start, current - start);
+  tokens.emplace_back(type, str, literal, line);
 }
 
 void Lexer::error(const std::size_t line_no, const std::string &msg) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <any>
+#include <cstdint>
 #include <string>
 
 namespace plox {
@@ -57,10 +59,14 @@ enum class TokenType {
 struct Token {
   TokenType type{};
   std::string lexeme{};
+  std::any literal{};
   std::uint16_t line{};
 
   Token(TokenType t, const std::string &l, const std::uint16_t li)
       : type(t), lexeme(l), line(li) {}
+
+  Token(TokenType t, const std::string &l, std::any lit, const std::uint16_t li)
+      : type(t), lexeme(l), literal(lit), line(li) {}
 
   std::string toString() {
     return std::to_string(static_cast<std::uint8_t>(type)) + " " + lexeme;
